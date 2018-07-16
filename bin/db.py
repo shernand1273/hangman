@@ -16,6 +16,17 @@
 import sqlite3
 import random
 
+#This function will call the testDb function to make sure the database file opens correctly, if not it enables the backup by
+#calling the enableBackup function to ensure that file exists or opens, it sets the datasource variable used to accordingly
+def checkFile():
+    datasource = ""
+    if(testDb()==True):
+        datasource = "db"
+        return datasource
+    elif(testDb()==False):
+        dbBackup.enableBackup()
+        datasource ="backup"
+        return datasource
 
 #This functin tests that the db file is found so that the main function can decide to either use the db or backup
 def testDb():
@@ -58,7 +69,6 @@ def getWordFromDb(db_length):
         getConn.close()
 
         #the database is returning the word as a tuple, so we have to extract the word from it using index 0
-        print("Word came from database")
         return theWord[0]
 
 

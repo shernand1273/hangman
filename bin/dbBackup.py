@@ -45,5 +45,4 @@ def viewContent(theLines):
 #this function gets called by the fromBackup() when its action parameter is equal to GET_WORD
 def getWord(list):
     randomNum = random.randint(0,len(list))
-    print("Word came from text backup file")
     return(list[randomNum])
