@@ -446,7 +446,7 @@ class Ui_MainWindow(object):
         self.y_button.setStyleSheet("background-color:rgb(160, 219, 100);margin:3px;border-radius:2px")
         self.z_button.setStyleSheet("background-color:rgb(160, 219, 100);margin:3px;border-radius:2px")
 
-    def show(self,theButton,theWord,theGuessField,theLetter):##################
+    def show(self,theButton,theWord,theGuessField,theLetter):##################test function##########
         print(theWord)
         print(theGuessField)
         print(theLetter)
