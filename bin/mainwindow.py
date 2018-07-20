@@ -10,34 +10,39 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import db
 import dbBackup
 
-#global variable for keeping track of the tries, its not tied to the process but to this module
-tries =7
+#This is the function that will be pulling the word from the database or backup file its called by the UI_MainWindow ___init__ constructor
+def pickWordFromFile():
+    dbSource =db.checkFile()
+    if(dbSource == "db"):
+        gameWord=db.getWordFromDb(db.fromDb("RET_LENGTH"))
+
+
+    elif(dbSource =="backup"):
+        gameWord =dbBackup.fromBackup("GET_WORD")
+
+    return gameWord
+
+
+#The tries are being put into a class to avoid using a global variable, now we can easily update the value
+class Tries:
+
+    def __init__(self):
+        self.tries=7
+
+    def setTries(self,arg):
+        self.tries = arg
+
+    def getTries(self):
+        return self.tries
+
+#use this for a word class so that the guess field can be edited out of it too
+
+
 
 class Ui_MainWindow(object):
 
 
-
-
     def setupUi(self, MainWindow):
-        gameWord=""
-        dbSource =db.checkFile()
-
-
-        if(dbSource == "db"):
-            gameWord=db.getWordFromDb(db.fromDb("RET_LENGTH"))
-
-
-        elif(dbSource =="backup"):
-            gameWord =dbBackup.fromBackup("GET_WORD")
-
-        #chang all letters to upper because we are comparing them to all upper characters
-        gameWord=gameWord.upper()
-        #create a varaible string to form the guess field
-        guessField=" ___ "*len(gameWord)
-        #split this guess Field into a list so that we can later index values as the user finds the letters
-        guessField=guessField.split()
-
-
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(559, 440)
@@ -59,7 +64,7 @@ class Ui_MainWindow(object):
         self.l_button.setDefault(False)
         self.l_button.setFlat(False)
         self.l_button.setObjectName("l_button")
-        self.l_button.clicked.connect(lambda :self.show(self.l_button,gameWord,guessField,"L"))###########################
+        self.l_button.clicked.connect(lambda :self.testLetter(self.l_button,self.tries,"L"))###########################
         self.m_button = QtWidgets.QPushButton(self.centralwidget)
         self.m_button.setGeometry(QtCore.QRect(500, 340, 41, 31))
         font = QtGui.QFont()
@@ -70,6 +75,7 @@ class Ui_MainWindow(object):
         self.m_button.setDefault(False)
         self.m_button.setFlat(False)
         self.m_button.setObjectName("m_button")
+        self.m_button.clicked.connect(lambda :self.testLetter(self.m_button,self.tries,"M"))
         self.q_button = QtWidgets.QPushButton(self.centralwidget)
         self.q_button.setGeometry(QtCore.QRect(140, 370, 41, 31))
         font = QtGui.QFont()
@@ -80,6 +86,7 @@ class Ui_MainWindow(object):
         self.q_button.setDefault(False)
         self.q_button.setFlat(False)
         self.q_button.setObjectName("q_button")
+        self.q_button.clicked.connect(lambda :self.testLetter(self.q_button,self.tries,"Q"))
         self.b_button = QtWidgets.QPushButton(self.centralwidget)
         self.b_button.setGeometry(QtCore.QRect(60, 340, 41, 31))
         font = QtGui.QFont()
@@ -90,6 +97,7 @@ class Ui_MainWindow(object):
         self.b_button.setDefault(False)
         self.b_button.setFlat(False)
         self.b_button.setObjectName("b_button")
+        self.b_button.clicked.connect(lambda :self.testLetter(self.b_button,self.tries,"B"))
         self.z_button = QtWidgets.QPushButton(self.centralwidget)
         self.z_button.setGeometry(QtCore.QRect(500, 370, 41, 31))
         font = QtGui.QFont()
@@ -100,6 +108,7 @@ class Ui_MainWindow(object):
         self.z_button.setDefault(False)
         self.z_button.setFlat(False)
         self.z_button.setObjectName("z_button")
+        self.z_button.clicked.connect(lambda :self.testLetter(self.z_button,self.tries,"Z"))
         self.w_button = QtWidgets.QPushButton(self.centralwidget)
         self.w_button.setGeometry(QtCore.QRect(380, 370, 41, 31))
         font = QtGui.QFont()
@@ -110,6 +119,7 @@ class Ui_MainWindow(object):
         self.w_button.setDefault(False)
         self.w_button.setFlat(False)
         self.w_button.setObjectName("w_button")
+        self.w_button.clicked.connect(lambda :self.testLetter(self.w_button,self.tries,"W"))
         self.r_button = QtWidgets.QPushButton(self.centralwidget)
         self.r_button.setGeometry(QtCore.QRect(180, 370, 41, 31))
         font = QtGui.QFont()
@@ -120,6 +130,7 @@ class Ui_MainWindow(object):
         self.r_button.setDefault(False)
         self.r_button.setFlat(False)
         self.r_button.setObjectName("r_button")
+        self.r_button.clicked.connect(lambda :self.testLetter(self.r_button,self.tries,"R"))
         self.d_button = QtWidgets.QPushButton(self.centralwidget)
         self.d_button.setGeometry(QtCore.QRect(140, 340, 41, 31))
         font = QtGui.QFont()
@@ -130,6 +141,7 @@ class Ui_MainWindow(object):
         self.d_button.setDefault(False)
         self.d_button.setFlat(False)
         self.d_button.setObjectName("d_button")
+        self.d_button.clicked.connect(lambda :self.testLetter(self.d_button,self.tries,"D"))
         self.p_button = QtWidgets.QPushButton(self.centralwidget)
         self.p_button.setGeometry(QtCore.QRect(100, 370, 41, 31))
         font = QtGui.QFont()
@@ -140,6 +152,7 @@ class Ui_MainWindow(object):
         self.p_button.setDefault(False)
         self.p_button.setFlat(False)
         self.p_button.setObjectName("p_button")
+        self.p_button.clicked.connect(lambda :self.testLetter(self.p_button,self.tries,"P"))
         self.g_button = QtWidgets.QPushButton(self.centralwidget)
         self.g_button.setGeometry(QtCore.QRect(260, 340, 41, 31))
         font = QtGui.QFont()
@@ -150,6 +163,7 @@ class Ui_MainWindow(object):
         self.g_button.setDefault(False)
         self.g_button.setFlat(False)
         self.g_button.setObjectName("g_button")
+        self.g_button.clicked.connect(lambda :self.testLetter(self.g_button,self.tries,"G"))
         self.k_button = QtWidgets.QPushButton(self.centralwidget)
         self.k_button.setGeometry(QtCore.QRect(420, 340, 41, 31))
         font = QtGui.QFont()
@@ -160,6 +174,7 @@ class Ui_MainWindow(object):
         self.k_button.setDefault(False)
         self.k_button.setFlat(False)
         self.k_button.setObjectName("k_button")
+        self.k_button.clicked.connect(lambda :self.testLetter(self.k_button,self.tries,"K"))
         self.o_button = QtWidgets.QPushButton(self.centralwidget)
         self.o_button.setGeometry(QtCore.QRect(60, 370, 41, 31))
         font = QtGui.QFont()
@@ -170,6 +185,7 @@ class Ui_MainWindow(object):
         self.o_button.setDefault(False)
         self.o_button.setFlat(False)
         self.o_button.setObjectName("o_button")
+        self.o_button.clicked.connect(lambda :self.testLetter(self.o_button,self.tries,"O"))
         self.x_button = QtWidgets.QPushButton(self.centralwidget)
         self.x_button.setGeometry(QtCore.QRect(420, 370, 41, 31))
         font = QtGui.QFont()
@@ -180,6 +196,7 @@ class Ui_MainWindow(object):
         self.x_button.setDefault(False)
         self.x_button.setFlat(False)
         self.x_button.setObjectName("x_button")
+        self.x_button.clicked.connect(lambda :self.testLetter(self.x_button,self.tries,"X"))
         self.t_button = QtWidgets.QPushButton(self.centralwidget)
         self.t_button.setGeometry(QtCore.QRect(260, 370, 41, 31))
         font = QtGui.QFont()
@@ -190,6 +207,7 @@ class Ui_MainWindow(object):
         self.t_button.setDefault(False)
         self.t_button.setFlat(False)
         self.t_button.setObjectName("t_button")
+        self.t_button.clicked.connect(lambda :self.testLetter(self.t_button,self.tries,"T"))
         self.u_button = QtWidgets.QPushButton(self.centralwidget)
         self.u_button.setGeometry(QtCore.QRect(300, 370, 41, 31))
         font = QtGui.QFont()
@@ -200,6 +218,7 @@ class Ui_MainWindow(object):
         self.u_button.setDefault(False)
         self.u_button.setFlat(False)
         self.u_button.setObjectName("u_button")
+        self.u_button.clicked.connect(lambda :self.testLetter(self.u_button,self.tries,"U"))
         self.i_button = QtWidgets.QPushButton(self.centralwidget)
         self.i_button.setGeometry(QtCore.QRect(340, 340, 41, 31))
         font = QtGui.QFont()
@@ -210,6 +229,7 @@ class Ui_MainWindow(object):
         self.i_button.setDefault(False)
         self.i_button.setFlat(False)
         self.i_button.setObjectName("i_button")
+        self.i_button.clicked.connect(lambda :self.testLetter(self.i_button,self.tries,"I"))
         self.a_button = QtWidgets.QPushButton(self.centralwidget)
         self.a_button.setGeometry(QtCore.QRect(20, 340, 41, 31))
         font = QtGui.QFont()
@@ -220,6 +240,7 @@ class Ui_MainWindow(object):
         self.a_button.setDefault(False)
         self.a_button.setFlat(False)
         self.a_button.setObjectName("a_button")
+        self.a_button.clicked.connect(lambda :self.testLetter(self.a_button,self.tries,"A"))
         self.v_button = QtWidgets.QPushButton(self.centralwidget)
         self.v_button.setGeometry(QtCore.QRect(340, 370, 41, 31))
         font = QtGui.QFont()
@@ -230,6 +251,7 @@ class Ui_MainWindow(object):
         self.v_button.setDefault(False)
         self.v_button.setFlat(False)
         self.v_button.setObjectName("v_button")
+        self.v_button.clicked.connect(lambda :self.testLetter(self.v_button,self.tries,"V"))
         self.animationFrame = QtWidgets.QFrame(self.centralwidget)
         self.animationFrame.setGeometry(QtCore.QRect(10, 20, 541, 261))
         self.animationFrame.setStyleSheet("background-color: \'white\';\n"
@@ -237,12 +259,12 @@ class Ui_MainWindow(object):
         self.animationFrame.setObjectName("animationFrame")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.animationFrame)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.test_text = QtWidgets.QLabel(self.animationFrame)
-        self.test_text.setStyleSheet("color: \'black\';\n"
-"margin:2px")
-        self.test_text.setAlignment(QtCore.Qt.AlignCenter)
-        self.test_text.setObjectName("test_text")
-        self.verticalLayout.addWidget(self.test_text)
+        self.test_text = QtWidgets.QLabel(self.animationFrame)#to be removed on final version
+        self.test_text.setStyleSheet("color: black ;margin:2px")#to be removed on final version
+
+        self.test_text.setAlignment(QtCore.Qt.AlignCenter)###To be removed on final version
+        self.test_text.setObjectName("test_text")#to be removed on final version
+        self.verticalLayout.addWidget(self.test_text)#to be removed on final version
         self.s_button = QtWidgets.QPushButton(self.centralwidget)
         self.s_button.setGeometry(QtCore.QRect(220, 370, 41, 31))
         font = QtGui.QFont()
@@ -253,6 +275,7 @@ class Ui_MainWindow(object):
         self.s_button.setDefault(False)
         self.s_button.setFlat(False)
         self.s_button.setObjectName("s_button")
+        self.s_button.clicked.connect(lambda :self.testLetter(self.s_button,self.tries,"S"))
         self.j_button = QtWidgets.QPushButton(self.centralwidget)
         self.j_button.setGeometry(QtCore.QRect(380, 340, 41, 31))
         font = QtGui.QFont()
@@ -263,6 +286,7 @@ class Ui_MainWindow(object):
         self.j_button.setDefault(False)
         self.j_button.setFlat(False)
         self.j_button.setObjectName("j_button")
+        self.j_button.clicked.connect(lambda :self.testLetter(self.j_button,self.tries,"J"))
         self.e_button = QtWidgets.QPushButton(self.centralwidget)
         self.e_button.setGeometry(QtCore.QRect(180, 340, 41, 31))
         font = QtGui.QFont()
@@ -273,6 +297,7 @@ class Ui_MainWindow(object):
         self.e_button.setDefault(False)
         self.e_button.setFlat(False)
         self.e_button.setObjectName("e_button")
+        self.e_button.clicked.connect(lambda :self.testLetter(self.e_button,self.tries,"E"))
         self.n_button = QtWidgets.QPushButton(self.centralwidget)
         self.n_button.setGeometry(QtCore.QRect(20, 370, 41, 31))
         font = QtGui.QFont()
@@ -283,6 +308,7 @@ class Ui_MainWindow(object):
         self.n_button.setDefault(False)
         self.n_button.setFlat(False)
         self.n_button.setObjectName("n_button")
+        self.n_button.clicked.connect(lambda :self.testLetter(self.n_button,self.tries,"N"))
         self.y_button = QtWidgets.QPushButton(self.centralwidget)
         self.y_button.setGeometry(QtCore.QRect(460, 370, 41, 31))
         font = QtGui.QFont()
@@ -293,6 +319,7 @@ class Ui_MainWindow(object):
         self.y_button.setDefault(False)
         self.y_button.setFlat(False)
         self.y_button.setObjectName("y_button")
+        self.y_button.clicked.connect(lambda :self.testLetter(self.y_button,self.tries,"Y"))
         self.h_button = QtWidgets.QPushButton(self.centralwidget)
         self.h_button.setGeometry(QtCore.QRect(300, 340, 41, 31))
         font = QtGui.QFont()
@@ -303,6 +330,7 @@ class Ui_MainWindow(object):
         self.h_button.setDefault(False)
         self.h_button.setFlat(False)
         self.h_button.setObjectName("h_button")
+        self.h_button.clicked.connect(lambda :self.testLetter(self.h_button,self.tries,"H"))
         self.c_button = QtWidgets.QPushButton(self.centralwidget)
         self.c_button.setGeometry(QtCore.QRect(100, 340, 41, 31))
         font = QtGui.QFont()
@@ -313,6 +341,7 @@ class Ui_MainWindow(object):
         self.c_button.setDefault(False)
         self.c_button.setFlat(False)
         self.c_button.setObjectName("c_button")
+        self.c_button.clicked.connect(lambda :self.testLetter(self.c_button,self.tries,"C"))
         self.f_button = QtWidgets.QPushButton(self.centralwidget)
         self.f_button.setGeometry(QtCore.QRect(220, 340, 41, 31))
         font = QtGui.QFont()
@@ -323,6 +352,7 @@ class Ui_MainWindow(object):
         self.f_button.setDefault(False)
         self.f_button.setFlat(False)
         self.f_button.setObjectName("f_button")
+        self.f_button.clicked.connect(lambda :self.testLetter(self.f_button,self.tries,"F"))
         self.widget = QtWidgets.QWidget(self.centralwidget)
         self.widget.setGeometry(QtCore.QRect(0, 280, 551, 59))
         self.widget.setObjectName("widget")
@@ -412,8 +442,8 @@ class Ui_MainWindow(object):
         self.h_button.setText(_translate("MainWindow", "H"))
         self.c_button.setText(_translate("MainWindow", "C"))
         self.f_button.setText(_translate("MainWindow", "F"))
-        self.guessWord.setText(_translate("MainWindow", "____ ____ ____ ____ ____ ____ ____"))
-        self.tries.setText(_translate("MainWindow", "Tries"))
+        self.guessWord.setText(_translate("MainWindow", guessField))
+        self.tries.setText(_translate("MainWindow",triesLabelText ))
         self.actionrestart.setText(_translate("MainWindow", "New Game"))
         self.actionexit.setText(_translate("MainWindow", "Exit"))
         self.actioninformation.setText(_translate("MainWindow", "How to play"))
@@ -446,14 +476,53 @@ class Ui_MainWindow(object):
         self.y_button.setStyleSheet("background-color:rgb(160, 219, 100);margin:3px;border-radius:2px")
         self.z_button.setStyleSheet("background-color:rgb(160, 219, 100);margin:3px;border-radius:2px")
 
-    def show(self,theButton,theWord,theGuessField,theLetter):##################test function##########
-        print(theWord)
-        print(theGuessField)
+
+    def testLetter(self,theButton,trieslabel,theLetter):##################test function##########
+        #theButton - represents the button calling this FUNCTION
+        #trieslabel - represents the self.tries label widget
+        #theLetter- this is the specific letter passed in as a parameter by its corresponding button
+        theButton.setStyleSheet("color:white")
+        theButton.setEnabled(False)
         print(theLetter)
-        print(tries)
+
+        if(theLetter in word):
+            print("the letter is in the word")
+
+            for i in range(len(word)):
+                if(theLetter==word[i]):
+                    guessList[i] = theLetter
+
+                else:
+                    continue
+            print(guessList)
+        else:
+            theTries = gameTries.getTries()
+            theTries= theTries -1
+            #now we have to update the Tries class object and the Tries Label
+            gameTries.setTries(theTries)
+            newTriesTextlabel="Tries: " +str(gameTries.getTries())
+            trieslabel.setText(newTriesTextlabel)
+
+            #if the amount of tries left is 0, the program will generate a messge lettring the user know he/she lost
+            if(theTries==0):
+                print("You have lost the game")
+
+            #update the tries textLabel as well
+
+
 
 if __name__ == "__main__":
     import sys
+    #This calls a function outside of the class to retrieve the word from either the database or backupFile
+    word = pickWordFromFile().upper()
+    #this calls an outside class to set the tries as an object, better option than a global variable
+    gameTries=Tries()
+    #this guessField is used for the label in the game window(looks like " ____ ____ ____")
+    guessField=" ___ "*len(word)
+    guessList = guessField.split()
+    triesLabelText= "Tries: "
+    triesLabelText+=str(gameTries.getTries())
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

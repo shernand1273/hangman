@@ -17,9 +17,9 @@ class Ui_launcherWin(object):
     def openHangman(self):
         self.window=QtWidgets.QMainWindow()
         self.ui= Ui_MainWindow()#this is the name of the UI class for the hangman game
-        self.ui.setupUi(self.window)#this is the method from the hangman class, in the parenthesis we put our new window variable, which is self.window in this case
+        self.ui.setupUi(self.window)#this is the method from the UI_MainWindow class, in the parenthesis we put our new window variable, which is self.window in this case
         launcherWin.hide()#this hides the launcer window when the hangman game is opened up
-        self.window.show()#this will show the new window after hiding the launcher 
+        self.window.show()#this will show the new window after hiding the launcher
 
     def setupUi(self, launcherWin):
         launcherWin.setObjectName("launcherWin")
@@ -62,12 +62,6 @@ class Ui_launcherWin(object):
         self.hangman.setText(_translate("launcherWin", "Hangman"))
         self.hangman.clicked.connect(self.openHangman)#this is the signal for calling the openHangman function, which opoens the game
 
-    def runhangman(self):
-        #call a function within the hangman.py file to call the main()
-        import mainwindow
-        import sys
-        mainwindow.runMain()
-        sys.exit()
 
 
 if __name__ == "__main__":
