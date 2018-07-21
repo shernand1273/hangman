@@ -28,14 +28,23 @@ class Tries:
 
     def __init__(self):
         self.tries=7
+        self.rightGuesses=0
 
-    def setTries(self,arg):
-        self.tries = arg
+
+    def setTries(self,arg1):
+        self.tries = arg1
+
 
     def getTries(self):
         return self.tries
 
-#use this for a word class so that the guess field can be edited out of it too
+
+    def setRightGuessess(self,arg2):
+        self.rightGuesses=arg2
+
+
+    def getRightGuessess(self):
+        return self.rightGuesses
 
 
 
@@ -483,6 +492,7 @@ class Ui_MainWindow(object):
         #theLetter- this is the specific letter passed in as a parameter by its corresponding button
         theButton.setStyleSheet("color:white")
         theButton.setEnabled(False)
+
         print(theLetter)
 
         if(theLetter in word):
@@ -490,11 +500,15 @@ class Ui_MainWindow(object):
 
             for i in range(len(word)):
                 if(theLetter==word[i]):
+                    rightLetter=gameTries.getRightGuessess()
+                    rightLetter=rightLetter+1
+                    gameTries.setRightGuessess(rightLetter)
                     guessList[i] = theLetter
 
                 else:
                     continue
             print(guessList)
+            print(gameTries.getRightGuessess())
         else:
             theTries = gameTries.getTries()
             theTries= theTries -1
@@ -507,21 +521,23 @@ class Ui_MainWindow(object):
             if(theTries==0):
                 print("You have lost the game")
 
-            #update the tries textLabel as well
 
-
+        #here it test if all the right Guessess so far are equal to the length of the word, the user has won the game
+        if(gameTries.getRightGuessess() == len(word)):
+            print("You have won the game")
 
 if __name__ == "__main__":
     import sys
     #This calls a function outside of the class to retrieve the word from either the database or backupFile
     word = pickWordFromFile().upper()
     #this calls an outside class to set the tries as an object, better option than a global variable
-    gameTries=Tries()
+    gameTries=Tries()#Obj to keep track of the number of tries and right guessess
     #this guessField is used for the label in the game window(looks like " ____ ____ ____")
     guessField=" ___ "*len(word)
     guessList = guessField.split()
     triesLabelText= "Tries: "
     triesLabelText+=str(gameTries.getTries())
+
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
