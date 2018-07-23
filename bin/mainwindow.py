@@ -24,15 +24,18 @@ def pickWordFromFile():
 
 
 #The tries are being put into a class to avoid using a global variable, now we can easily update the value
-class Tries:
+class GameSession():
 
     def __init__(self):
+        self.word= pickWordFromFile()
         self.tries=7
         self.rightGuesses=0
+        self.guessField=" ___ "*len(self.word)#temporary string field that will be added to the guess Label on the main GUI
+        self.guessList=self.guessField.split()
+        self.guessField2=""
 
-
-    def setTries(self,arg1):
-        self.tries = arg1
+    def setTries(self,arg):
+        self.tries = arg
 
 
     def getTries(self):
@@ -47,9 +50,24 @@ class Tries:
         return self.rightGuesses
 
 
+    def getWord(self):
+        return self.word
+
+
+    def setGuessField(self):
+        self.guessField = " ___ "*len(self.word)
+
+
+    def getGuessField(self):
+        return self.guessField
+
+
+    def getGuessFieldList(self):
+        return self.guessList
+
+game=GameSession()
 
 class Ui_MainWindow(object):
-
 
     def setupUi(self, MainWindow):
 
@@ -376,13 +394,13 @@ class Ui_MainWindow(object):
         font.setItalic(False)
         font.setWeight(50)
         self.guessWord.setFont(font)
-        self.guessWord.setStyleSheet("font: 13pt \".SF NS Text\";\n"
+        self.guessWord.setStyleSheet("font: 12pt \".SF NS Text\";\n"
 "color: rgb(255, 255, 255);")
-        self.guessWord.setObjectName("guessWord")
+        self.guessWord.setObjectName("guessWord")#####################################################
         self.horizontalLayout_2.addWidget(self.guessWord, 0, QtCore.Qt.AlignHCenter)
         self.tries = QtWidgets.QLabel(self.widget)
         font = QtGui.QFont()
-        font.setPointSize(24)
+        font.setPointSize(14)
         self.tries.setFont(font)
         self.tries.setStyleSheet("color: rgb(255, 255, 255);")
         self.tries.setObjectName("tries")
@@ -451,8 +469,8 @@ class Ui_MainWindow(object):
         self.h_button.setText(_translate("MainWindow", "H"))
         self.c_button.setText(_translate("MainWindow", "C"))
         self.f_button.setText(_translate("MainWindow", "F"))
-        self.guessWord.setText(_translate("MainWindow", guessField))
-        self.tries.setText(_translate("MainWindow",triesLabelText ))
+        self.guessWord.setText(game.getGuessField())################
+        self.tries.setText("Tries: "+str(game.getTries()))
         self.actionrestart.setText(_translate("MainWindow", "New Game"))
         self.actionexit.setText(_translate("MainWindow", "Exit"))
         self.actioninformation.setText(_translate("MainWindow", "How to play"))
@@ -490,31 +508,34 @@ class Ui_MainWindow(object):
         #theButton - represents the button calling this FUNCTION
         #trieslabel - represents the self.tries label widget
         #theLetter- this is the specific letter passed in as a parameter by its corresponding button
-        theButton.setStyleSheet("color:white")
+        theButton.setStyleSheet("color:white;background-color:rgb(160,219,100);margin:3px;border-radius:2px")
         theButton.setEnabled(False)
-
-        print(theLetter)
-
+        word=game.getWord().upper()
+        guessList=game.getGuessFieldList()
+        newTriesTextlabel="Tries: " +str(game.getTries())
+        guessString=""
         if(theLetter in word):
-            print("the letter is in the word")
+
 
             for i in range(len(word)):
                 if(theLetter==word[i]):
-                    rightLetter=gameTries.getRightGuessess()
+                    rightLetter=game.getRightGuessess()
                     rightLetter=rightLetter+1
-                    gameTries.setRightGuessess(rightLetter)
+                    game.setRightGuessess(rightLetter)
                     guessList[i] = theLetter
+                    self.guessWord.setStyleSheet("font:18pt;color:white")
+                    self.guessWord.setText(' '.join(guessList))
+
+
 
                 else:
                     continue
-            print(guessList)
-            print(gameTries.getRightGuessess())
+
         else:
-            theTries = gameTries.getTries()
+            theTries = game.getTries()
             theTries= theTries -1
             #now we have to update the Tries class object and the Tries Label
-            gameTries.setTries(theTries)
-            newTriesTextlabel="Tries: " +str(gameTries.getTries())
+            game.setTries(theTries)
             trieslabel.setText(newTriesTextlabel)
 
             #if the amount of tries left is 0, the program will generate a messge lettring the user know he/she lost
@@ -523,22 +544,13 @@ class Ui_MainWindow(object):
 
 
         #here it test if all the right Guessess so far are equal to the length of the word, the user has won the game
-        if(gameTries.getRightGuessess() == len(word)):
+        if(game.getRightGuessess() == len(word)):
             print("You have won the game")
+
+
 
 if __name__ == "__main__":
     import sys
-    #This calls a function outside of the class to retrieve the word from either the database or backupFile
-    word = pickWordFromFile().upper()
-    #this calls an outside class to set the tries as an object, better option than a global variable
-    gameTries=Tries()#Obj to keep track of the number of tries and right guessess
-    #this guessField is used for the label in the game window(looks like " ____ ____ ____")
-    guessField=" ___ "*len(word)
-    guessList = guessField.split()
-    triesLabelText= "Tries: "
-    triesLabelText+=str(gameTries.getTries())
-
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

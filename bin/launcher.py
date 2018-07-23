@@ -9,8 +9,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from mainwindow import Ui_MainWindow#this imports the hangman(mainwindow) file and its class (UI_MainWindow) so that we can open it
 import sys
+import os
 
 class Ui_launcherWin(object):
+
+    
+
 
     #this function will be called when the hangman button on the launcher window is pressed to open the hangman class
     #if the window we are opening is not of the QtWidgets class (i.e. QtDialog, then we replace that where the QtWidgets is located)
