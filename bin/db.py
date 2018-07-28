@@ -31,7 +31,7 @@ def checkFile():
 #This functin tests that the db file is found so that the main function can decide to either use the db or backup
 def testDb():
         try:
-            dbFile = open("wordList.db","r")
+            dbFile = open("../wordFiles/wordList.db","r")
             dbFile.close()
 
             return True
@@ -44,7 +44,7 @@ def testDb():
 def fromDb(action_arg):
     #VIEW_CONTENT parameter will show the entire content of the database
     #RET_LENGTH will return the length of the database table
-    viewConn=sqlite3.connect("wordList.db")
+    viewConn=sqlite3.connect("../wordFiles/wordList.db")
     viewCur=viewConn.cursor()
     viewCur.execute("SELECT * FROM wordList")
     rows =viewCur.fetchall()
@@ -62,7 +62,7 @@ def getWordFromDb(db_length):
 
     #conenct to database to retrieve the word from the row that matches the random number to theNum in the database
     try:
-        getConn=sqlite3.connect("wordList.db")
+        getConn=sqlite3.connect("../wordFiles/wordList.db")
         getCursor=getConn.cursor()
         getCursor.execute("SELECT word FROM wordList WHERE theNum =? ", (str(randNumber),))
         theWord=getCursor.fetchone()

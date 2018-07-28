@@ -614,13 +614,13 @@ class Ui_MainWindow(object):
             if(theTries==0):
                 print("You have lost the game")
                 buttonList.disableAllButtons()
-
+                #function to close the game session
 
         #here it test if all the right Guessess so far are equal to the length of the word, the user has won the game
         if(game.getRightGuessess() == len(word)):
             print("You have won the game")
             buttonList.disableAllButtons()
-
+            #call a function in mainwindow that will close this game session
 
 
 if __name__ == "__main__":
