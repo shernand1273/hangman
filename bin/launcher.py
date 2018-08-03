@@ -1,29 +1,47 @@
-# -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'launcher.ui'
-#
-# Created by: PyQt5 UI code generator 5.11.2
-#
-# WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from mainwindow import Ui_MainWindow#this imports the hangman(mainwindow) file and its class (UI_MainWindow) so that we can open it
 import sys
-import os
+
+
+
+
+class objRef():
+    def __init__(self):
+
+        self.objectRef = None
+
+    def setObjectRef(self,theObject):
+        self.objectRef= theObject
+
+    def getObjectRef(self):
+        return self.objectRef
+
+
+hangmanOBJ=objRef()
+
+def getObjRef():
+    return hangmanOBJ.getObjectRef()
+
 
 class Ui_launcherWin(object):
-
-    
-
 
     #this function will be called when the hangman button on the launcher window is pressed to open the hangman class
     #if the window we are opening is not of the QtWidgets class (i.e. QtDialog, then we replace that where the QtWidgets is located)
     def openHangman(self):
+
         self.window=QtWidgets.QMainWindow()
         self.ui= Ui_MainWindow()#this is the name of the UI class for the hangman game
         self.ui.setupUi(self.window)#this is the method from the UI_MainWindow class, in the parenthesis we put our new window variable, which is self.window in this case
+        hangmanOBJ.setObjectRef(self.window)#call the hangmanOBJ and have it store the self.window object
+        self.window =hangmanOBJ.getObjectRef()
         launcherWin.hide()#this hides the launcer window when the hangman game is opened up
-        self.window.show()#this will show the new window after hiding the launcher
+        self.value=self.window.show()#this will show the new window after hiding the launcher
+
+
+
+
 
     def setupUi(self, launcherWin):
         launcherWin.setObjectName("launcherWin")

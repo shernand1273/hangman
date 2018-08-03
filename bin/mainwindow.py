@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'mainwindowv1.ui'
-#
-# Created by: PyQt5 UI code generator 5.11.2
-#
-# WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from confirmbox import Ui_Form
 import db
 import dbBackup
+import sys
+import restartGame
+
 
 #This is the function that will be pulling the word from the database or backup file its called by the UI_MainWindow ___init__ constructor
 def pickWordFromFile():
@@ -21,6 +19,7 @@ def pickWordFromFile():
         gameWord =dbBackup.fromBackup("GET_WORD")
 
     return gameWord
+
 
 #this class will hold all the buttons in a list so that we can later use it to check the button state(enabled, disabled)
 #we use this class so that when a user either wins or looses, the buttons will be disabled
@@ -82,11 +81,51 @@ class GameSession():
     def getGuessFieldList(self):
         return self.guessList
 
+
+class EndOfGame():
+    def __init__(self):
+        self.eogCode=None
+
+    def setEOG(self,code):
+        self.eogCode = code
+        print("Code was set")
+
+    def getEOG(self):
+        return self.eogCode
+
+
+
+class mainWinRef():
+    def __init__(self):
+        self.obj=None
+
+    def setMainRef(self,mainBox):
+        self.obj = mainBox
+
+    def getMainRef(self):
+        return self.obj
+
+
+
+
 #enable all classess
 buttonList=ButtonList()
 game=GameSession()
 
+
+
 class Ui_MainWindow(object):
+
+
+    #This function will open up the confirmbox dialog to ask the user if he/she wants to play another game
+    def playAgain(self):
+        #get the this window's object address, which was passed by the launcher calling the ThisWindow class within this file
+        self.secondWindow= QtWidgets.QMainWindow()
+        self.ui = Ui_Form()
+        self.ui.setupUi(self.secondWindow)
+        self.secondWindow.show()
+
+
 
     def setupUi(self, MainWindow):
 
@@ -578,6 +617,7 @@ class Ui_MainWindow(object):
         self.z_button.setStyleSheet("background-color:rgb(160, 219, 100);margin:3px;border-radius:2px")
 
 
+
     def testLetter(self,theButton,trieslabel,theLetter):##################test function##########
         #theButton - represents the button calling this FUNCTION
         #trieslabel - represents the self.tries label widget
@@ -588,6 +628,7 @@ class Ui_MainWindow(object):
         guessList=game.getGuessFieldList()
         newTriesTextlabel="Tries Left: " +str(game.getTries())
         guessString=""###############i don't think this is being used or needed, check code before deleting###########
+
 
 
         if(theLetter in word):
@@ -605,7 +646,7 @@ class Ui_MainWindow(object):
             theTries = game.getTries()
             theTries= theTries -1
             #now we have to update the Tries class object and the Tries Label
-            print(theTries)
+
             game.setTries(theTries)
             update=str(game.getTries())
             trieslabel.setText("Tries Left: %s" % (update))
@@ -614,26 +655,56 @@ class Ui_MainWindow(object):
             if(theTries==0):
                 print("You have lost the game")
                 buttonList.disableAllButtons()
-                #function to close the game session
+                self.playAgain()
 
-        #here it test if all the right Guessess so far are equal to the length of the word, the user has won the game
+                #restartGame.restart()
+
+
+
+
+
+
+
+
+
+        #here it tests if all the right Guessess so far are equal to the length of the word, the user has won the game
         if(game.getRightGuessess() == len(word)):
             print("You have won the game")
             buttonList.disableAllButtons()
-            #call a function in mainwindow that will close this game session
+            self.playAgain()
+            #restartGame.restart()
 
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+
+def main():
+
+        #what we have to do here is create two objects, the game object which derives from the UI_MainWindow class.
+        #the other object that we have to create is the dialog box by calling the Ui_Form class
+
+
+    if __name__ =="__main__":
+
+            app = QtWidgets.QApplication([])
+            MainWindow = QtWidgets.QMainWindow()
+            ui = Ui_MainWindow()
+            ui.setupUi(MainWindow)
+        #set obeject reference
+
+
+            MainWindow.show()
+            sys.exit(app.exec_())
+
+
+
+main()
+
 
 
 #bug 1 (Fixed 7/27/2018)
 #when the user clicks on a button for the first time, the tries lable is not being updated
 #the second time the user clicks on a button, the tries label is updated
 #internally, the game is making the right calculations, but the label is not being set accordingly until the next button is clicked
+
+
+#issue
+#confirmbox is not able to relaunch the mainwindow.py class because the object does needed comes from launcher.py
