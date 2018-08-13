@@ -661,15 +661,22 @@ class Ui_MainWindow(object):
             theMov.setSpeed(300)
 
         theMov.start()
+        #print(game.getWord())
 
 
-    def playWinner(self):
+    def play(self,outcome):
+        file=["../gifs/winner.gif","../gifs/lostGame.gif"]
+        gif=None
+        if(outcome =="Winner"):
+            gif = file[0]
 
-        winnerFile="../gifs/winner.gif"
-        winnerMov = QtGui.QMovie(winnerFile)
-        winnerLabel = movie.getMovieLabel()
-        winnerLabel.setMovie(winnerMov)
-        winnerMov.start()
+        elif(outcome =="Looser"):
+            gif =file[1]
+
+        outMov = QtGui.QMovie(gif)
+        outLabel = movie.getMovieLabel()
+        outLabel.setMovie(outMov)
+        outMov.start()
 
 
 
@@ -687,7 +694,7 @@ class Ui_MainWindow(object):
         guessString=""###############i don't think this is being used or needed, check code before deleting###########
 
 
-
+        #This will check if the letter chosen by the user is located in the word, retreived from the game object method .getWord()
         if(theLetter in word):
 
             for i in range(len(word)):
@@ -714,15 +721,16 @@ class Ui_MainWindow(object):
             #if the amount of tries left is 0, the program will generate a messge lettring the user know he/she lost
             if(theTries==0):
                 buttonList.disableAllButtons()
+
                 self.playAgain()
 
 
 
         #here it tests if all the right Guessess so far are equal to the length of the word, the user has won the game
         if(game.getRightGuessess() == len(word)):
-            
+
             buttonList.disableAllButtons()
-            self.playWinner()
+            self.play("Winner")
             self.playAgain()
 
 

@@ -47,18 +47,19 @@ class Ui_launcherWin(object):
         launcherWin.setObjectName("launcherWin")
         launcherWin.resize(271, 352)
         launcherWin.setStyleSheet("background-color: rgb(48, 43, 43);")
-        self.game3 = QtWidgets.QPushButton(launcherWin)
-        self.game3.setGeometry(QtCore.QRect(10, 240, 251, 101))
-        self.game3.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.game3.setMouseTracking(True)
-        self.game3.setAutoFillBackground(False)
-        self.game3.setStyleSheet("background-color: rgb(108,108,108);color: rgb(255, 255, 255);\n"
+        self.exit = QtWidgets.QPushButton(launcherWin)
+        self.exit.setGeometry(QtCore.QRect(10, 240, 251, 101))
+        self.exit.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.exit.setMouseTracking(True)
+        self.exit.setAutoFillBackground(False)
+        self.exit.setStyleSheet("background-color: rgb(108,108,108);color: rgb(255, 255, 255);\n"
 "font: 75 18pt \"Arial\";\n"
 "")
-        self.game3.setAutoDefault(False)
-        self.game3.setDefault(False)
-        self.game3.setFlat(False)
-        self.game3.setObjectName("game3")
+        self.exit.setAutoDefault(False)
+        self.exit.setDefault(False)
+        self.exit.setFlat(False)
+        self.exit.setObjectName("exit")
+        self.exit.clicked.connect(self.quit)
         self.game2 = QtWidgets.QPushButton(launcherWin)
         self.game2.setGeometry(QtCore.QRect(10, 130, 251, 101))
         self.game2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -79,12 +80,13 @@ class Ui_launcherWin(object):
     def retranslateUi(self, launcherWin):
         _translate = QtCore.QCoreApplication.translate
         launcherWin.setWindowTitle(_translate("launcherWin", "Games"))
-        self.game3.setText(_translate("launcherWin", "Game 3"))
+        self.exit.setText(_translate("launcherWin", "Exit"))
         self.game2.setText(_translate("launcherWin", "Game 2"))
         self.hangman.setText(_translate("launcherWin", "Hangman"))
         self.hangman.clicked.connect(self.openHangman)#this is the signal for calling the openHangman function, which opoens the game
 
-
+    def quit(self):
+        sys.exit()
 
 if __name__ == "__main__":
     import sys
