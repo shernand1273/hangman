@@ -2,10 +2,12 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from confirmbox import Ui_Form
+from PyQt5.QtCore import pyqtSlot
 import db
 import dbBackup
 import sys
 import restartGame
+import time
 
 
 #This is the function that will be pulling the word from the database or backup file its called by the UI_MainWindow ___init__ constructor
@@ -39,16 +41,20 @@ class ButtonList():
 
 
 
+
 #The tries are being put into a class to avoid using a global variable, now we can easily update the value
 class GameSession():
 
     def __init__(self):
         self.word= pickWordFromFile()
         self.tries=7
+        self.totalGameTries=7
         self.rightGuesses=0
         self.guessField=" ___ "*len(self.word)#temporary string field that will be added to the guess Label on the main GUI
         self.guessList=self.guessField.split()
         self.guessField2=""
+        self.gifList=["../gifs/action1.gif","../gifs/action2.gif","../gifs/action3.gif","../gifs/action4.gif","../gifs/action5.gif","../gifs/action6.gif","../gifs/action7.gif"]
+
 
     def setTries(self,arg):
         self.tries = arg
@@ -81,36 +87,29 @@ class GameSession():
     def getGuessFieldList(self):
         return self.guessList
 
+    def getGIF(self,gifNum):
+        return self.gifList[gifNum]
 
-class EndOfGame():
+    def getTotalGameTries(self):
+        return self.totalGameTries
+
+
+
+class Movie():
     def __init__(self):
-        self.eogCode=None
+        self.movieLabel=None
 
-    def setEOG(self,code):
-        self.eogCode = code
-        print("Code was set")
+    def setMovieLabel(self,movOBJ):
+        self.movieLabel = movOBJ
 
-    def getEOG(self):
-        return self.eogCode
-
-
-
-class mainWinRef():
-    def __init__(self):
-        self.obj=None
-
-    def setMainRef(self,mainBox):
-        self.obj = mainBox
-
-    def getMainRef(self):
-        return self.obj
-
-
+    def getMovieLabel(self):
+        return self.movieLabel
 
 
 #enable all classess
-buttonList=ButtonList()
-game=GameSession()
+buttonList=ButtonList()#this object will hold a list of all the buttons available in this game.  Object is used for referrence to change the state from "enabled" to "disabled"
+game=GameSession()#this class object will hohld all the information for the game such as the word, tries, etc.
+movie=Movie()#the movie object references the test_text QLabel so that the animations can be changed
 
 
 
@@ -119,6 +118,7 @@ class Ui_MainWindow(object):
 
     #This function will open up the confirmbox dialog to ask the user if he/she wants to play another game
     def playAgain(self):
+
         #get the this window's object address, which was passed by the launcher calling the ThisWindow class within this file
         self.secondWindow= QtWidgets.QMainWindow()
         self.ui = Ui_Form()
@@ -128,6 +128,7 @@ class Ui_MainWindow(object):
 
 
     def setupUi(self, MainWindow):
+
 
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(559, 440)
@@ -381,12 +382,14 @@ class Ui_MainWindow(object):
         self.animationFrame.setObjectName("animationFrame")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.animationFrame)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.test_text = QtWidgets.QLabel(self.animationFrame)#to be removed on final version
-        self.test_text.setStyleSheet("color: black ;margin:2px")#to be removed on final version
-
-        self.test_text.setAlignment(QtCore.Qt.AlignCenter)###To be removed on final version
-        self.test_text.setObjectName("test_text")#to be removed on final version
-        self.verticalLayout.addWidget(self.test_text)#to be removed on final version
+        self.test_text = QtWidgets.QLabel(self.animationFrame)
+        self.test_text.setStyleSheet("color: black ;margin:2px")
+        self.test_text.setAlignment(QtCore.Qt.AlignLeft)
+        self.test_text.setObjectName("test_text")
+        #the test_text label is going to be saved as object belonging to the movie class
+        #the reason for saving this label as part of the movie class is so that we can reference it from other classess (inside and outside) without having to allocate more memory or using global variables
+        movie.setMovieLabel(self.test_text)
+        self.verticalLayout.addWidget(self.test_text)
 
 
         self.s_button = QtWidgets.QPushButton(self.centralwidget)
@@ -554,7 +557,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Hangman"))
         self.l_button.setText(_translate("MainWindow", "L"))
         self.m_button.setText(_translate("MainWindow", "M"))
         self.q_button.setText(_translate("MainWindow", "Q"))
@@ -573,7 +576,20 @@ class Ui_MainWindow(object):
         self.i_button.setText(_translate("MainWindow", "I"))
         self.a_button.setText(_translate("MainWindow", "A"))
         self.v_button.setText(_translate("MainWindow", "V"))
-        self.test_text.setText(_translate("MainWindow", "Animation Frame"))
+
+        ############################ Inital GIF when the game first runs ####################################
+        #use the method ".frameCount()"to get the amount of frames in the movie
+        #This part of the code will show set the self.test_text label to show the inital PNG image when the game starts
+        mov= QtGui.QMovie(game.getGIF(0))#this is the initial QMovie Object that will be displayed
+        #because we put the original label used for animations into a class, we are accessing that object in order to set movie
+        self.movLabel = movie.getMovieLabel()
+        #attach the movie object to the movie label object
+        self.movLabel.setMovie(mov)
+        #in order for the gif to show and stay displayed, the movie has to be started and then stopped
+        mov.start()
+        mov.stop()
+        #####################################################################################################
+
         self.s_button.setText(_translate("MainWindow", "S"))
         self.j_button.setText(_translate("MainWindow", "J"))
         self.e_button.setText(_translate("MainWindow", "E"))
@@ -582,7 +598,7 @@ class Ui_MainWindow(object):
         self.h_button.setText(_translate("MainWindow", "H"))
         self.c_button.setText(_translate("MainWindow", "C"))
         self.f_button.setText(_translate("MainWindow", "F"))
-        self.guessWord.setText(game.getGuessField())################
+        self.guessWord.setText(game.getGuessField())
         self.tries.setText("Tries Left: "+str(game.getTries()))
         self.actionrestart.setText(_translate("MainWindow", "New Game"))
         self.actionexit.setText(_translate("MainWindow", "Exit"))
@@ -616,13 +632,54 @@ class Ui_MainWindow(object):
         self.y_button.setStyleSheet("background-color:rgb(160, 219, 100);margin:3px;border-radius:2px")
         self.z_button.setStyleSheet("background-color:rgb(160, 219, 100);margin:3px;border-radius:2px")
 
+    def playAnimation(self,num):
+        #num variable will hold the value returned from the tries objects
+        #the num variable is used to determine which animation will be played via the animation Label
+
+        totalTries = game.getTotalGameTries()#This variable holds the total game tries in the game, used to calculate which animation to display
+        animationIndex =(totalTries - num)-1# we are subtracting 1 from the result because this will give us the exact index number of the animation we need since the reference starts at 0
+
+        #if the parameter passed is WIN, set the gif object to show the winning gif
+
+        #use the gameSession object to get the gif file based on the animationIndex calculated
+        gifFile= game.getGIF(animationIndex)
+
+            #Now that the right gif file was located, the QMovie object has to be built
+        theMov= QtGui.QMovie(gifFile)
+            #Now that the QMovie object is built, the QLabel for the animation must be referrenced by calling the movie objects class .getMovieLabel
+        movLabel = movie.getMovieLabel()
+            #with the movieLabel now referrenced, call the setMovie method to add the mov variable to the movLabel object
+        movLabel.setMovie(theMov)
+            #set the speed of the gif so that it looks decent, you can alwasy increase or decrease the speed.
+        if(animationIndex==0):
+            theMov.setSpeed(220)
+
+        elif(animationIndex==2):
+            theMov.setSpeed(380)
+
+        else:
+            theMov.setSpeed(300)
+
+        theMov.start()
 
 
-    def testLetter(self,theButton,trieslabel,theLetter):##################test function##########
+    def playWinner(self):
+
+        winnerFile="../gifs/winner.gif"
+        winnerMov = QtGui.QMovie(winnerFile)
+        winnerLabel = movie.getMovieLabel()
+        winnerLabel.setMovie(winnerMov)
+        winnerMov.start()
+
+
+
+    def testLetter(self,theButton,trieslabel,theLetter):
         #theButton - represents the button calling this FUNCTION
         #trieslabel - represents the self.tries label widget
         #theLetter- this is the specific letter passed in as a parameter by its corresponding button
+        #to show the user an action took place, the button color will be changed to gray
         theButton.setStyleSheet("color:gray;background-color:rgb(160,219,100);margin:3px;border-radius:2px")
+        #this disables the button and prevents the user from choosing it again
         theButton.setEnabled(False)
         word=game.getWord().upper()
         guessList=game.getGuessFieldList()
@@ -645,34 +702,29 @@ class Ui_MainWindow(object):
         else:
             theTries = game.getTries()
             theTries= theTries -1
-            #now we have to update the Tries class object and the Tries Label
 
+
+            #now we have to update the Tries class object and the Tries Label
             game.setTries(theTries)
+            self.playAnimation(game.getTries())
+            #after playing the animation, we are going to update the tries label to show the right amount of tries left
             update=str(game.getTries())
             trieslabel.setText("Tries Left: %s" % (update))
 
             #if the amount of tries left is 0, the program will generate a messge lettring the user know he/she lost
             if(theTries==0):
-                print("You have lost the game")
                 buttonList.disableAllButtons()
                 self.playAgain()
-
-                #restartGame.restart()
-
-
-
-
-
-
 
 
 
         #here it tests if all the right Guessess so far are equal to the length of the word, the user has won the game
         if(game.getRightGuessess() == len(word)):
-            print("You have won the game")
+            
             buttonList.disableAllButtons()
+            self.playWinner()
             self.playAgain()
-            #restartGame.restart()
+
 
 
 
@@ -688,23 +740,9 @@ def main():
             MainWindow = QtWidgets.QMainWindow()
             ui = Ui_MainWindow()
             ui.setupUi(MainWindow)
-        #set obeject reference
-
-
             MainWindow.show()
             sys.exit(app.exec_())
 
 
 
 main()
-
-
-
-#bug 1 (Fixed 7/27/2018)
-#when the user clicks on a button for the first time, the tries lable is not being updated
-#the second time the user clicks on a button, the tries label is updated
-#internally, the game is making the right calculations, but the label is not being set accordingly until the next button is clicked
-
-
-#issue
-#confirmbox is not able to relaunch the mainwindow.py class because the object does needed comes from launcher.py
